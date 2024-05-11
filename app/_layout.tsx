@@ -6,17 +6,17 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useColorScheme } from "@/components/useColorScheme";
-import {
-  useFonts,
-  Poppins_100Thin,
-  Poppins_200ExtraLight,
-  Poppins_300Light,
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-} from "@expo-google-fonts/poppins";
+// import {
+//   useFonts,
+//   Poppins_100Thin,
+//   Poppins_200ExtraLight,
+//   Poppins_300Light,
+//   Poppins_400Regular,
+//   Poppins_500Medium,
+//   Poppins_600SemiBold,
+// } from "@expo-google-fonts/poppins";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -30,29 +30,18 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  let [loaded, error] = useFonts({
-    Poppins_100Thin,
-    Poppins_200ExtraLight,
-    Poppins_300Light,
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-  });
-
+  // let [loaded, error] = useState(true);
+  let loaded = true;
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  // useEffect(() => {
+  //   if (error) throw error;
+  // }, [error]);
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  }, []);
 
   return <RootLayoutNav />;
 }
