@@ -17,14 +17,6 @@ import * as Location from "expo-location";
 // } from "@/utils/handlePushNotifications";
 // import * as Notifications from "expo-notifications";
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: true,
-//   }),
-// });
-
 let foregroundSubscription: any = null;
 
 export default function TabOneScreen() {

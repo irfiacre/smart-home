@@ -1,13 +1,10 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import "expo-dev-client";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useColorScheme } from "@/components/useColorScheme";
+import { AppProvider } from "@/stateMgt/AppContext copy";
 // import {
 //   useFonts,
 //   Poppins_100Thin,
@@ -51,9 +48,11 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      <AppProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </AppProvider>
     </ThemeProvider>
   );
 }
