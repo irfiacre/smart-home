@@ -11,15 +11,56 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigation } from "expo-router";
 import * as Location from "expo-location";
 // import { startGeofencingAsync } from "expo-location";
-// import {
-//   registerForPushNotificationsAsync,
-//   sendPushNotification,
-// } from "@/utils/handlePushNotifications";
-// import * as Notifications from "expo-notifications";
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+} from "@/utils/handlePushNotifications";
+import * as Notifications from "expo-notifications";
 
 let foregroundSubscription: any = null;
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: true,
+  }),
+});
+
 export default function TabOneScreen() {
+  // Notifications code
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState<
+    Notifications.Notification | undefined
+  >(undefined);
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token ?? ""))
+      .catch((error: any) => setExpoPushToken(`${error}`));
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   const [location, setLocation] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<any>(null);
   const [state, setState] = useState({
@@ -81,6 +122,23 @@ export default function TabOneScreen() {
     })();
   }, []);
 
+  useEffect(() => {
+    if (location) {
+      if (
+        location.longitude == HOME_LOCATION.longitude &&
+        location.latitude === HOME_LOCATION.latitude
+      ) {
+        sendPushNotification(expoPushToken, {
+          title: "Location Change",
+          body: " You've reached home",
+        });
+      }
+    }
+  }, [location]);
+  sendPushNotification(expoPushToken, {
+    title: "Location Change Test",
+    body: " You've reached home",
+  });
   return (
     <View style={styles.container}>
       <MapView

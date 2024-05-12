@@ -16,6 +16,7 @@ const StepsCounter = () => {
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
+    console.log("-----> ", isAvailable);
 
     if (isAvailable) {
       const startOfDay = new Date();
