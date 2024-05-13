@@ -7,6 +7,7 @@ import MapView, {
   Circle,
 } from "react-native-maps";
 import {
+  GEOFENCING_LOCATIONS,
   HOME_LOCATION,
   INITIAL_REGION,
   TEST_GEOFENCING_LOCATIONS,
@@ -19,6 +20,8 @@ import {
   sendPushNotification,
 } from "@/utils/handlePushNotifications";
 import * as Notifications from "expo-notifications";
+import { isDevice } from "expo-device";
+import { showAlert } from "@/utils/helpers";
 
 let foregroundSubscription: any = null;
 
@@ -104,14 +107,24 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (location) {
-      if (
-        location.longitude == HOME_LOCATION.longitude &&
-        location.latitude === HOME_LOCATION.latitude
-      ) {
-        sendPushNotification(expoPushToken, {
-          title: "Location Change",
-          body: " You've reached home",
-        });
+      const TITLE = "Location Update";
+
+      const currentLocation: any = GEOFENCING_LOCATIONS.filter(
+        (elt) =>
+          elt.latitude === location.latitude &&
+          location.longitude === elt.longitude
+      );
+
+      if (currentLocation?.title) {
+        const MESSAGE_BODY = `You've reached ${currentLocation.title}!`;
+        if (isDevice) {
+          sendPushNotification(expoPushToken, {
+            title: TITLE,
+            body: MESSAGE_BODY,
+          });
+        } else {
+          showAlert(TITLE, MESSAGE_BODY);
+        }
       }
     }
   }, [location]);
@@ -125,7 +138,7 @@ export default function TabOneScreen() {
         provider={Platform.OS == "ios" ? PROVIDER_DEFAULT : PROVIDER_GOOGLE}
         initialRegion={INITIAL_REGION}
       >
-        {TEST_GEOFENCING_LOCATIONS.map((locationElt) => (
+        {GEOFENCING_LOCATIONS.map((locationElt) => (
           <Circle
             key={locationElt.key}
             center={locationElt}

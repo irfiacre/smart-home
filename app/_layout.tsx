@@ -4,9 +4,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useColorScheme } from "@/components/useColorScheme";
-export {
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
+import { LightSensor } from "expo-sensors";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -29,7 +28,32 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const [{ illuminance }, setData] = useState({ illuminance: 0 });
+  useEffect(() => {
+    _toggle();
 
+    return () => {
+      _unsubscribe();
+    };
+  }, []);
+
+  const _toggle = () => {
+    if (this._subscription) {
+      _unsubscribe();
+    } else {
+      _subscribe();
+    }
+  };
+
+  const _subscribe = () => {
+    this._subscription = LightSensor.addListener(setData);
+  };
+
+  const _unsubscribe = () => {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  };
+  useEffect(() => {}, []);
   return (
     <ThemeProvider value={DefaultTheme}>
       <Stack>

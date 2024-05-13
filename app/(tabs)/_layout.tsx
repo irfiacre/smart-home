@@ -6,22 +6,19 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Accelerometer } from "expo-sensors";
+import { showAlert } from "@/utils/helpers";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   const [motionDetected, setMotionDetected] = useState(false);
   useEffect(() => {
-    console.log("====");
-
     const subscription = Accelerometer.addListener((accelerometerData) => {
       const { x, y, z } = accelerometerData;
-      console.log("-------", x, y, z);
-
       const acceleration = Math.sqrt(x ** 2 + y ** 2 + z ** 2);
       if (acceleration > 2) {
         setMotionDetected(true);
-        alert("Motion Detected");
+        showAlert("Motion Detection", "Device is in Motion");
       } else {
         setMotionDetected(false);
       }

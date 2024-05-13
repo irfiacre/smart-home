@@ -29,11 +29,20 @@ export const HOME_LOCATION = {
   longitudeDelta: 0.2,
 };
 
-export const SCHOOL_GEOFENCING_LOCATIONS = [
-  { key: 1, latitude: -1.9557, longitude: 30.1042, title: "Auca Gishushu" },
-  { key: 2, latitude: -1.9525, longitude: 30.1019, title: "RDB Gishushu" },
-  { key: 3, latitude: -1.9601, longitude: 30.1113, title: "Gisimenti" },
-  { key: 4, latitude: -1.9573, longitude: 30.1042, title: "Yego Moto" },
+export const GEOFENCING_LOCATIONS = [
+  { key: 1, latitude: -1.9557, longitude: 30.1042, title: "At School (AUCA)" },
+  {
+    key: 2,
+    latitude: HOME_LOCATION.latitude,
+    longitude: HOME_LOCATION.longitude,
+    title: "Home",
+  },
+  {
+    key: 3,
+    latitude: WORK_LOCATION.latitude,
+    longitude: WORK_LOCATION.longitude,
+    title: "Work",
+  },
 ];
 
 export const TEST_GEOFENCING_LOCATIONS = [
