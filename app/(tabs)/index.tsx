@@ -1,6 +1,11 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, View } from "@/components/Themed";
-import MapView, { PROVIDER_GOOGLE, Marker, Circle } from "react-native-maps";
+import MapView, {
+  PROVIDER_GOOGLE,
+  PROVIDER_DEFAULT,
+  Marker,
+  Circle,
+} from "react-native-maps";
 import {
   HOME_LOCATION,
   INITIAL_REGION,
@@ -8,9 +13,7 @@ import {
   WORK_LOCATION,
 } from "@/constants/Constants";
 import { useEffect, useRef, useState } from "react";
-import { useNavigation } from "expo-router";
 import * as Location from "expo-location";
-// import { startGeofencingAsync } from "expo-location";
 import {
   registerForPushNotificationsAsync,
   sendPushNotification,
@@ -36,31 +39,6 @@ export default function TabOneScreen() {
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then((token) => setExpoPushToken(token ?? ""))
-      .catch((error: any) => setExpoPushToken(`${error}`));
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
   const [location, setLocation] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<any>(null);
   const [state, setState] = useState({
@@ -69,18 +47,7 @@ export default function TabOneScreen() {
     markers: [],
   });
 
-  const navigation = useNavigation();
-
   const mapRef = useRef<any>();
-  const onResetMap = () => {
-    const rwRegion = {
-      latitude: -1.9403,
-      longitude: 29.8739,
-      latitudeDelta: 2,
-      longitudeDelta: 2,
-    };
-    mapRef.current?.animateToRegion(rwRegion);
-  };
 
   // Start location tracking in foreground
   const startForegroundUpdate = async () => {
@@ -104,14 +71,19 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={onResetMap} style={styles.resetBtnContainer}>
-          <Text style={styles.resetBtnText}>Reset</Text>
-        </TouchableOpacity>
-      ),
-    });
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token ?? ""))
+      .catch((error: any) => setExpoPushToken(`${error}`));
 
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -120,6 +92,14 @@ export default function TabOneScreen() {
       }
       startForegroundUpdate();
     })();
+    return () => {
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(
+          notificationListener.current
+        );
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -135,10 +115,6 @@ export default function TabOneScreen() {
       }
     }
   }, [location]);
-  sendPushNotification(expoPushToken, {
-    title: "Location Change Test",
-    body: " You've reached home",
-  });
   return (
     <View style={styles.container}>
       <MapView
@@ -146,15 +122,14 @@ export default function TabOneScreen() {
         showsMyLocationButton
         ref={mapRef}
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
+        provider={Platform.OS == "ios" ? PROVIDER_DEFAULT : PROVIDER_GOOGLE}
         initialRegion={INITIAL_REGION}
       >
-        {/* <Marker key="Home" coordinate={HOME_LOCATION} /> */}
         {TEST_GEOFENCING_LOCATIONS.map((locationElt) => (
           <Circle
             key={locationElt.key}
             center={locationElt}
-            radius={300}
+            radius={700}
             strokeColor="rgba(0, 100, 181, 1.1)"
             fillColor="rgba(0, 100, 180, 0.2)"
           />
@@ -162,25 +137,6 @@ export default function TabOneScreen() {
 
         <Marker key="Work" coordinate={WORK_LOCATION} />
       </MapView>
-      {/* <View style={styles.controlsContainer}>
-        <TouchableOpacity
-          onPress={() => console.log("Increase")}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>-</Text>
-        </TouchableOpacity>
-        <Text style={styles.distanceText}>
-          {state.distance > 999
-            ? state.distance / 1000 + " KM"
-            : state.distance + " m"}
-        </Text>
-        <TouchableOpacity
-          onPress={() => console.log("Decrease")}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>+</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 }
@@ -221,7 +177,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     height: 80,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderTopWidth: 1,
     flexDirection: "row",
     alignItems: "center",
@@ -236,3 +192,10 @@ const styles = StyleSheet.create({
     borderColor: "#dbdbdb",
   },
 });
+
+{
+  /* <meta-data
+  android:name="com.google.android.geo.API_KEY"
+  android:value="AIzaSyDk6H-6sJuDi0s-c5Jh8eBaZQ-xH-4olCA"
+/>; */
+}

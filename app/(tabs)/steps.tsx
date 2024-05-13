@@ -16,7 +16,6 @@ const StepsCounter = () => {
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
-    console.log("-----> ", isAvailable);
 
     if (isAvailable) {
       const startOfDay = new Date();
@@ -59,11 +58,12 @@ const StepsCounter = () => {
 
     return () => subscription && subscription.remove();
   }, []);
-  console.log(pastStepCount);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Today: {`${currentStepCount} Steps`}</Text>
+      <Text style={styles.title}>
+        You have taken: {`${currentStepCount} Steps`}
+      </Text>
       <RingProgress progress={pastStepCount / 10000} />
       <View style={styles.valuesContainer}>
         <View style={styles.values}>

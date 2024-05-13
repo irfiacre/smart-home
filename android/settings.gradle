@@ -1,4 +1,4 @@
-rootProject.name = 'final-proj'
+rootProject.name = 'smart-home'
 
 dependencyResolutionManagement {
   versionCatalogs {
