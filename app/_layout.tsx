@@ -53,7 +53,11 @@ function RootLayoutNav() {
     this._subscription && this._subscription.remove();
     this._subscription = null;
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (illuminance > 0) {
+      console.log(illuminance);
+    }
+  }, [illuminance]);
   return (
     <ThemeProvider value={DefaultTheme}>
       <Stack>
