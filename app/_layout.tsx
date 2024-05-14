@@ -58,6 +58,9 @@ function RootLayoutNav() {
       console.log(illuminance);
     }
   }, [illuminance]);
+
+  console.log("------>", illuminance);
+
   return (
     <ThemeProvider value={DefaultTheme}>
       <Stack>
