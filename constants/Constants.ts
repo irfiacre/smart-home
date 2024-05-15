@@ -29,21 +29,26 @@ export const HOME_LOCATION = {
   longitudeDelta: 0.2,
 };
 
-export const GEOFENCING_LOCATIONS = [
-  { key: 1, latitude: -1.9557, longitude: 30.1042, title: "At School (AUCA)" },
-  {
+export const GEOFENCING_LOCATIONS = {
+  school: {
+    key: 1,
+    latitude: -1.9557,
+    longitude: 30.1042,
+    title: "At School (AUCA)",
+  },
+  home: {
     key: 2,
     latitude: HOME_LOCATION.latitude,
     longitude: HOME_LOCATION.longitude,
     title: "Home",
   },
-  {
+  work: {
     key: 3,
     latitude: WORK_LOCATION.latitude,
     longitude: WORK_LOCATION.longitude,
     title: "Work",
   },
-];
+};
 
 export const TEST_GEOFENCING_LOCATIONS = [
   { key: 1, latitude: -1.9512, longitude: 30.06, title: "Norrsken KGL" },

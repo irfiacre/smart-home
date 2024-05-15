@@ -10,7 +10,6 @@ import {
   GEOFENCING_LOCATIONS,
   HOME_LOCATION,
   INITIAL_REGION,
-  TEST_GEOFENCING_LOCATIONS,
   WORK_LOCATION,
 } from "@/constants/Constants";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +20,7 @@ import {
 } from "@/utils/handlePushNotifications";
 import * as Notifications from "expo-notifications";
 import { isDevice } from "expo-device";
-import { showAlert } from "@/utils/helpers";
+import { calculateDistance, findDistance, showAlert } from "@/utils/helpers";
 
 let foregroundSubscription: any = null;
 
@@ -44,10 +43,11 @@ export default function TabOneScreen() {
 
   const [location, setLocation] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<any>(null);
-  const [state, setState] = useState({
-    distance: 700,
-    showCircle: true,
-    markers: [],
+  const [locationUpdate, setLocationUpdate] = useState({
+    shouldUpdateLocation: false,
+    lastLatitude: 0,
+    lastLongitude: 0,
+    count: 0,
   });
 
   const mapRef = useRef<any>();
@@ -105,27 +105,58 @@ export default function TabOneScreen() {
     };
   }, []);
 
+  const LOCATION_FENCE = [{ ...GEOFENCING_LOCATIONS.school }];
+
   useEffect(() => {
     if (location) {
-      const TITLE = "Location Update";
-
-      const currentLocation: any = GEOFENCING_LOCATIONS.filter(
-        (elt) =>
-          elt.latitude === location.latitude &&
-          location.longitude === elt.longitude
+      console.log(
+        "-----",
+        location.longitude,
+        locationUpdate.lastLongitude,
+        Math.abs(location.latitude),
+        Math.abs(locationUpdate.lastLatitude)
       );
 
-      if (currentLocation?.title) {
-        const MESSAGE_BODY = `You've reached ${currentLocation.title}!`;
-        if (isDevice) {
-          sendPushNotification(expoPushToken, {
-            title: TITLE,
-            body: MESSAGE_BODY,
-          });
-        } else {
-          showAlert(TITLE, MESSAGE_BODY);
+      const distance = calculateDistance(
+        location.longitude,
+        locationUpdate.lastLongitude,
+        location.latitude,
+        locationUpdate.lastLatitude
+      );
+      if (distance >= 500) {
+        setLocationUpdate((prevState) => ({
+          ...prevState,
+          shouldUpdateLocation: true,
+        }));
+      }
+      console.log("]]]", distance);
+
+      const TITLE = "Location Update";
+
+      if (
+        location.latitude !== LOCATION_FENCE[0].latitude ||
+        location.longitude !== LOCATION_FENCE[0].longitude
+      ) {
+        const MESSAGE_BODY = `You're out of the ${LOCATION_FENCE[0].title}!!`;
+        if (locationUpdate.shouldUpdateLocation) {
+          console.log(locationUpdate.shouldUpdateLocation);
+          if (isDevice) {
+            sendPushNotification(expoPushToken, {
+              title: TITLE,
+              body: MESSAGE_BODY,
+            });
+          } else {
+            showAlert(TITLE, MESSAGE_BODY);
+          }
         }
       }
+      setLocationUpdate((prevState) => ({
+        ...prevState,
+        shouldUpdateLocation: false,
+        lastLatitude: location.latitude,
+        lastLongitude: location.longitude,
+        count: prevState.count + 1,
+      }));
     }
   }, [location]);
   return (
@@ -138,7 +169,7 @@ export default function TabOneScreen() {
         provider={Platform.OS == "ios" ? PROVIDER_DEFAULT : PROVIDER_GOOGLE}
         initialRegion={INITIAL_REGION}
       >
-        {GEOFENCING_LOCATIONS.map((locationElt) => (
+        {LOCATION_FENCE.map((locationElt) => (
           <Circle
             key={locationElt.key}
             center={locationElt}
@@ -205,10 +236,3 @@ const styles = StyleSheet.create({
     borderColor: "#dbdbdb",
   },
 });
-
-{
-  /* <meta-data
-  android:name="com.google.android.geo.API_KEY"
-  android:value="AIzaSyDk6H-6sJuDi0s-c5Jh8eBaZQ-xH-4olCA"
-/>; */
-}
