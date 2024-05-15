@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { useColorScheme } from "@/components/useColorScheme";
 export { ErrorBoundary } from "expo-router";
 import { LightSensor } from "expo-sensors";
+import * as Brightness from "expo-brightness";
+import { Platform } from "react-native";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -26,15 +28,28 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+const changeBrightness = async (value: number) => {
+  const { status } = await Brightness.requestPermissionsAsync();
+  if (status === "granted") {
+    Brightness.setSystemBrightnessAsync(value);
+  }
+};
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const [{ illuminance }, setData] = useState({ illuminance: 0 });
   useEffect(() => {
-    _toggle();
+    if (Platform.OS === "android") {
+      _toggle();
 
-    return () => {
-      _unsubscribe();
-    };
+      return () => {
+        _unsubscribe();
+      };
+    } else {
+      console.warn(
+        `Ambient Sensor is not supported on ${Platform.OS} platform!`
+      );
+    }
   }, []);
 
   const _toggle = () => {
@@ -54,12 +69,16 @@ function RootLayoutNav() {
     this._subscription = null;
   };
   useEffect(() => {
-    if (illuminance > 0) {
-      console.log(illuminance);
+    if (illuminance >= 0 || illuminance <= 50) {
+      changeBrightness(0.3);
+    } else if (illuminance >= 50 || illuminance <= 300) {
+      changeBrightness(0.5);
+    } else if (illuminance >= 300 || illuminance <= 1000) {
+      changeBrightness(0.8);
+    } else {
+      changeBrightness(1);
     }
   }, [illuminance]);
-
-  console.log("------>", illuminance);
 
   return (
     <ThemeProvider value={DefaultTheme}>

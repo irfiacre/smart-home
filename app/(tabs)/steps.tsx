@@ -1,9 +1,24 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import Value from "@/components/steps/Value";
 import RingProgress from "@/components/steps/AnimatedRing";
-import { useNavigation } from "expo-router";
+import { Link, Stack, useNavigation } from "expo-router";
 import { Pedometer } from "expo-sensors";
+
+const UnsupportedPlatformScreen = () => {
+  return (
+    <>
+      <Stack.Screen options={{ title: "Oops!" }} />
+      <View style={styles.container}>
+        <Text style={styles.title}>{Platform.OS} Is not supported.</Text>
+
+        <Link href="/" style={styles.link}>
+          <Text style={styles.linkText}>Go to home screen!</Text>
+        </Link>
+      </View>
+    </>
+  );
+};
 
 const StepsCounter = () => {
   const navigation = useNavigation();
@@ -79,7 +94,7 @@ const StepsCounter = () => {
   );
 };
 
-export default StepsCounter;
+export default Platform.OS == "ios" ? StepsCounter : UnsupportedPlatformScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -100,5 +115,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     flexWrap: "wrap",
+  },
+  link: {
+    marginTop: 15,
+    paddingVertical: 15,
+  },
+  linkText: {
+    fontSize: 14,
+    color: "#2e78b7",
   },
 });
