@@ -109,27 +109,18 @@ export default function TabOneScreen() {
 
   useEffect(() => {
     if (location) {
-      console.log(
-        "-----",
-        location.longitude,
-        locationUpdate.lastLongitude,
-        Math.abs(location.latitude),
-        Math.abs(locationUpdate.lastLatitude)
-      );
-
       const distance = calculateDistance(
         location.longitude,
         locationUpdate.lastLongitude,
         location.latitude,
         locationUpdate.lastLatitude
       );
-      if (distance >= 500) {
+      if (distance >= 200) {
         setLocationUpdate((prevState) => ({
           ...prevState,
           shouldUpdateLocation: true,
         }));
       }
-      console.log("]]]", distance);
 
       const TITLE = "Location Update";
 
@@ -139,7 +130,6 @@ export default function TabOneScreen() {
       ) {
         const MESSAGE_BODY = `You're out of the ${LOCATION_FENCE[0].title}!!`;
         if (locationUpdate.shouldUpdateLocation) {
-          console.log(locationUpdate.shouldUpdateLocation);
           if (isDevice) {
             sendPushNotification(expoPushToken, {
               title: TITLE,
@@ -148,15 +138,15 @@ export default function TabOneScreen() {
           } else {
             showAlert(TITLE, MESSAGE_BODY);
           }
+          setLocationUpdate((prevState) => ({
+            ...prevState,
+            shouldUpdateLocation: false,
+            lastLatitude: location.latitude,
+            lastLongitude: location.longitude,
+            count: prevState.count + 1,
+          }));
         }
       }
-      setLocationUpdate((prevState) => ({
-        ...prevState,
-        shouldUpdateLocation: false,
-        lastLatitude: location.latitude,
-        lastLongitude: location.longitude,
-        count: prevState.count + 1,
-      }));
     }
   }, [location]);
   return (
