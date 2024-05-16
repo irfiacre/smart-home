@@ -52,7 +52,7 @@ const StepsCounter = () => {
   };
   useEffect(() => {
     navigation.getParent()?.setOptions({
-      title: "Steps Count(Pedometer)",
+      title: "Steps Count",
       headerRight: () => null,
     });
     const subscription: any = subscribe();

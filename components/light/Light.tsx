@@ -12,7 +12,7 @@ const chartConfigs = {
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
   style: {
-    borderRadius: 16,
+    borderRadius: 10,
   },
   propsForDots: {
     r: "6",
@@ -20,18 +20,22 @@ const chartConfigs = {
     stroke: "#00d4ff",
   },
 };
+
 const LightComponent = () => {
   const [{ illuminance }, setData] = useState({ illuminance: 0 });
   const [lightData, setLightData] = useState<any>([]);
   const navigation = useNavigation();
+
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      title: "Light Sensor(Ambient Light)",
-      headerRight: () => null,
-    });
+    navigation
+      .getParent()
+      ?.getParent()
+      ?.setOptions({
+        title: "Ambient Light Analysis",
+        headerRight: () => null,
+      });
     if (Platform.OS === "android") {
       _toggle();
-
       return () => {
         _unsubscribe();
       };
@@ -64,7 +68,6 @@ const LightComponent = () => {
       setLightData((prev: any) => [...prev, illuminance]);
     }
   }, [illuminance]);
-  //   console.log(lightData);
 
   const dimData = Math.max(...lightData.filter((elt: any) => elt <= 50));
   const brightData = Math.max(...lightData.filter((elt: any) => elt >= 300));
@@ -75,15 +78,14 @@ const LightComponent = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Current: {illuminance} lux</Text>
-      <View>
+      <View style={styles.chartContainer}>
         <Text style={styles.subtitle}>Current Environment Analysis</Text>
-
         <BarChart
-          style={{ margin: 10, borderRadius: 3 }}
+          style={styles.chart}
           yAxisLabel=""
           yAxisSuffix=""
           data={{
-            labels: ["Dim", "Medium", "Bright"],
+            labels: ["Dimness", "Medium", "Brightness"],
             datasets: [
               {
                 data: [
@@ -94,7 +96,7 @@ const LightComponent = () => {
               },
             ],
           }}
-          width={Dimensions.get("window").width - 20}
+          width={Dimensions.get("window").width - 40}
           height={400}
           chartConfig={chartConfigs}
           verticalLabelRotation={30}
@@ -112,21 +114,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
+    backgroundColor: "#f5f5f5",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 16,
-    color: "#000",
-    padding: 5,
-    flexWrap: "wrap",
-    width: "95%",
+    marginBottom: 20,
+    color: "#333",
+    textAlign: "center",
+    width: "100%",
   },
   subtitle: {
-    fontSize: 24,
-    fontWeight: "400",
-    marginBottom: 5,
-    color: "grey",
-    padding: 5,
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 10,
+    color: "#666",
+    textAlign: "center",
+    width: "100%",
+  },
+  chartContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
+  chart: {
+    marginVertical: 10,
+    borderRadius: 16,
   },
 });

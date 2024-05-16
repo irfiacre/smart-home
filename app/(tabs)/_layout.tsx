@@ -47,7 +47,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="steps"
         options={{
-          title: "Sensor",
+          title: "Steps",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),
