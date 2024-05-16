@@ -47,9 +47,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="steps"
         options={{
-          title: "Steps",
+          title: "Sensor",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="footsteps-sharp" size={size} color={color} />
+            <Ionicons name="settings" size={size} color={color} />
           ),
         }}
       />

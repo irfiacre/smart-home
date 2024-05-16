@@ -4,21 +4,7 @@ import Value from "@/components/steps/Value";
 import RingProgress from "@/components/steps/AnimatedRing";
 import { Link, Stack, useNavigation } from "expo-router";
 import { Pedometer } from "expo-sensors";
-
-const UnsupportedPlatformScreen = () => {
-  return (
-    <>
-      <Stack.Screen options={{ title: "Oops!" }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>{Platform.OS} Is not supported.</Text>
-
-        <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen!</Text>
-        </Link>
-      </View>
-    </>
-  );
-};
+import LightComponent from "@/components/light/Light";
 
 const StepsCounter = () => {
   const navigation = useNavigation();
@@ -66,7 +52,7 @@ const StepsCounter = () => {
   };
   useEffect(() => {
     navigation.getParent()?.setOptions({
-      title: "Steps Count",
+      title: "Steps Count(Pedometer)",
       headerRight: () => null,
     });
     const subscription: any = subscribe();
@@ -94,7 +80,7 @@ const StepsCounter = () => {
   );
 };
 
-export default Platform.OS == "ios" ? StepsCounter : UnsupportedPlatformScreen;
+export default Platform.OS == "ios" ? StepsCounter : LightComponent;
 
 const styles = StyleSheet.create({
   container: {
