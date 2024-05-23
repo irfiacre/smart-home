@@ -13,10 +13,14 @@ const StepsCounter = () => {
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [yesterdayStepCount, setYesterdayStepCount] = useState(0);
+  const [weekStepsCount, setWeekStepsCount] = useState<any>([]);
 
   const subscribe = async () => {
+    // console.log("===============");
+
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
+    console.log(isAvailable);
 
     if (isAvailable) {
       const startOfDay = new Date();
@@ -41,8 +45,23 @@ const StepsCounter = () => {
         start,
         startOfDay
       );
+
       if (yesterdayStepCountResult) {
         setYesterdayStepCount(yesterdayStepCountResult.steps);
+      }
+
+      for (let i = 0; i < 7; i++) {
+        start.setDate(end.getDate() - i);
+        start.setUTCHours(0, 0, 0, 0);
+        end.setDate(end.getDate() - (i + 1));
+        end.setUTCHours(23, 59, 59, 999);
+
+        const tempCounter = await Pedometer.getStepCountAsync(
+          start,
+          startOfDay
+        );
+
+        setWeekStepsCount((prevState: any) => prevState.push(tempCounter));
       }
 
       return Pedometer.watchStepCount((result) => {
@@ -50,6 +69,7 @@ const StepsCounter = () => {
       });
     }
   };
+
   useEffect(() => {
     navigation.getParent()?.setOptions({
       title: "Steps Count",
@@ -59,6 +79,8 @@ const StepsCounter = () => {
 
     return () => subscription && subscription.remove();
   }, []);
+
+  console.log(weekStepsCount);
 
   return (
     <View style={styles.container}>
