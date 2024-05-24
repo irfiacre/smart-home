@@ -1,5 +1,5 @@
-import { Platform, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { Platform, StyleSheet } from "react-native";
+import { View } from "@/components/Themed";
 import MapView, {
   PROVIDER_GOOGLE,
   PROVIDER_DEFAULT,
@@ -8,7 +8,6 @@ import MapView, {
 } from "react-native-maps";
 import {
   GEOFENCING_LOCATIONS,
-  HOME_LOCATION,
   INITIAL_REGION,
   WORK_LOCATION,
 } from "@/constants/Constants";
@@ -20,7 +19,7 @@ import {
 } from "@/utils/handlePushNotifications";
 import * as Notifications from "expo-notifications";
 import { isDevice } from "expo-device";
-import { calculateDistance, findDistance, showAlert } from "@/utils/helpers";
+import { calculateDistance, showAlert } from "@/utils/helpers";
 
 let foregroundSubscription: any = null;
 

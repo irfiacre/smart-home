@@ -2,7 +2,7 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import Value from "@/components/steps/Value";
 import RingProgress from "@/components/steps/AnimatedRing";
-import { Link, Stack, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import { Pedometer } from "expo-sensors";
 import LightComponent from "@/components/light/Light";
 
@@ -16,11 +16,8 @@ const StepsCounter = () => {
   const [weekStepsCount, setWeekStepsCount] = useState<any>([]);
 
   const subscribe = async () => {
-    // console.log("===============");
-
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
-    console.log(isAvailable);
 
     if (isAvailable) {
       const startOfDay = new Date();

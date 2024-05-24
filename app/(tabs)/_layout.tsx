@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
+import { Tabs } from "expo-router";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Accelerometer } from "expo-sensors";
 import { showAlert } from "@/utils/helpers";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   const [motionDetected, setMotionDetected] = useState(false);
   useEffect(() => {
     const subscription = Accelerometer.addListener((accelerometerData) => {
