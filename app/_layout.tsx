@@ -12,7 +12,6 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // let [loaded, error] = useState(true);
   let loaded = true;
 
   useEffect(() => {
