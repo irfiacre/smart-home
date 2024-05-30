@@ -104,7 +104,7 @@ export default function TabOneScreen() {
     };
   }, []);
 
-  const LOCATION_FENCE = [{ ...GEOFENCING_LOCATIONS.school }];
+  const LOCATION_FENCE = [{ ...GEOFENCING_LOCATIONS.work }];
 
   useEffect(() => {
     if (location) {

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { LightSensor } from "expo-sensors";
 import { BarChart } from "react-native-chart-kit";
 import { useNavigation } from "expo-router";
+import * as Brightness from "expo-brightness";
+import * as Device from "expo-device";
 
 const chartConfigs = {
   backgroundColor: "#1d78d6",
@@ -55,7 +57,25 @@ const LightComponent = () => {
   };
 
   const _subscribe = () => {
-    this._subscription = LightSensor.addListener(setData);
+    LightSensor.setUpdateInterval(100);
+    this._subscription = LightSensor.addListener((data: any) => {
+      // console.log("-------", data.illuminance);
+
+      setData((prevState: any) => ({
+        ...prevState,
+        illuminance: data.illuminance,
+      }));
+      if (Device.isDevice) {
+        (async () => {
+          const { status } = await Brightness.requestPermissionsAsync();
+          if (status === "granted") {
+            Brightness.setSystemBrightnessAsync(
+              data.illuminance <= 300 ? 0.3 : 1
+            );
+          }
+        })();
+      }
+    });
   };
 
   const _unsubscribe = () => {
@@ -74,6 +94,8 @@ const LightComponent = () => {
   const mediumData = Math.max(
     ...lightData.filter((elt: any) => elt > 50 && elt <= 300)
   );
+
+  useEffect(() => {}, [illuminance]);
 
   return (
     <View style={styles.container}>

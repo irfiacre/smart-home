@@ -47,20 +47,6 @@ const StepsCounter = () => {
         setYesterdayStepCount(yesterdayStepCountResult.steps);
       }
 
-      for (let i = 0; i < 7; i++) {
-        start.setDate(end.getDate() - i);
-        start.setUTCHours(0, 0, 0, 0);
-        end.setDate(end.getDate() - (i + 1));
-        end.setUTCHours(23, 59, 59, 999);
-
-        const tempCounter = await Pedometer.getStepCountAsync(
-          start,
-          startOfDay
-        );
-
-        setWeekStepsCount((prevState: any) => prevState.push(tempCounter));
-      }
-
       return Pedometer.watchStepCount((result) => {
         setCurrentStepCount(result.steps);
       });
@@ -76,8 +62,6 @@ const StepsCounter = () => {
 
     return () => subscription && subscription.remove();
   }, []);
-
-  console.log(weekStepsCount);
 
   return (
     <View style={styles.container}>
